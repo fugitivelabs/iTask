@@ -95,6 +95,7 @@ exports.listByRefs = (req, res) => {
         res.send({success: true, notes})
       }
     })
+    .populate("_user", ['firstName', 'lastName'])
   }
 }
 
