@@ -17,6 +17,7 @@ import CreateFlow from './views/CreateFlow.js.jsx';
 import FlowList from './views/FlowList.js.jsx';
 import SingleFlow from './views/SingleFlow.js.jsx';
 import UpdateFlow from './views/UpdateFlow.js.jsx';
+import MessageFlow from './views/MessageFlow.js.jsx'; 
 
 class FlowRouter extends Binder {
   constructor(props) {
@@ -30,6 +31,7 @@ class FlowRouter extends Binder {
         <YTRoute exact login={true} path="/flows/new" component={CreateFlow} />
         <YTRoute exact login={true} path="/flows/:flowId" component={SingleFlow}/>
         <YTRoute exact login={true} path="/flows/:flowId/update" component={UpdateFlow}/>
+        <YTRoute exact login={true} path="/flows/:flowId/tasks/:taskId/messages" component={MessageFlow}/>
       </Switch>
     )
   }
