@@ -43,16 +43,16 @@ class SingleFlow extends Binder {
   }
 
   componentDidMount() {
-    const { dispatch, match } = this.props;
-    dispatch(flowActions.fetchSingleIfNeeded(match.params.flowId));
+    const { dispatch, match: {params: {flowId}} } = this.props;
+    dispatch(flowActions.fetchSingleIfNeeded(flowId));
     dispatch(taskActions.fetchDefaultTask());
-    dispatch(taskActions.fetchListIfNeeded('_flow', match.params.flowId));
+    dispatch(taskActions.fetchListIfNeeded('_flow', flowId));
   }
 
 
   componentWillReceiveProps(nextProps) {
-    const { dispatch, match } = this.props;
-    dispatch(taskActions.fetchListIfNeeded('_flow', match.params.flowId));
+    const { dispatch, match: {params: {flowId}} } = this.props;
+    dispatch(taskActions.fetchListIfNeeded('_flow', flowId));
     this.setState({
       task: _.cloneDeep(nextProps.defaultTask.obj)
     })
@@ -71,12 +71,12 @@ class SingleFlow extends Binder {
 
   _handleTaskSubmit(e) {
     e.preventDefault();
-    const { defaultTask, dispatch, match } = this.props;
+    const { defaultTask, dispatch, match: {params: {flowId}} } = this.props;
     let newTask = {...this.state.task}
-    newTask._flow = match.params.flowId;
+    newTask._flow = flowId;
     dispatch(taskActions.sendCreateTask(newTask)).then(taskRes => {
       if(taskRes.success) {
-        dispatch(taskActions.invalidateList('_flow', match.params.flowId));
+        dispatch(taskActions.invalidateList('_flow', flowId));
         this.setState({
           showTaskForm: false
           , task: _.cloneDeep(defaultTask.obj)
@@ -92,7 +92,7 @@ class SingleFlow extends Binder {
     const { 
       defaultTask      
       , flowStore
-      , match
+      , match: {url, params: {flowId}}
       , taskStore 
     } = this.props;
 
@@ -103,13 +103,13 @@ class SingleFlow extends Binder {
 
 
     // get the taskList meta info here so we can reference 'isFetching'
-    const taskList = taskStore.lists && taskStore.lists._flow ? taskStore.lists._flow[match.params.flowId] : null;
+    const taskList = taskStore.lists && taskStore.lists._flow ? taskStore.lists._flow[flowId] : null;
 
     /**
      * use the reducer getList utility to convert the all.items array of ids
      * to the actual task objetcs
      */
-    const taskListItems = taskStore.util.getList("_flow", match.params.flowId);
+    const taskListItems = taskStore.util.getList("_flow", flowId);
     
     const isFlowEmpty = (
       !selectedFlow
@@ -137,25 +137,29 @@ class SingleFlow extends Binder {
 
     return (
       <FlowLayout>
-        <h3> Single Flow </h3>
         { isFlowEmpty ?
           (isFlowFetching ? <h2>Loading...</h2> : <h2>Empty.</h2>)
           :
           <div style={{ opacity: isFlowFetching ? 0.5 : 1 }}>
-            <h1> { selectedFlow.name }
-            </h1>
+            <div className="title">
+              <h1> { selectedFlow.name }</h1>
+              <Link className="title-btn" to={`${url}/update`}> Edit </Link>
+            </div>
             <p> { selectedFlow.description }</p>
-            <Link className="yt-btn x-small bordered" to={`${this.props.match.url}/update`}> Edit </Link>
             <hr/>
             { isTaskListEmpty ?
               (isTaskListFetching ? <h2>Loading...</h2> : <h2>Empty.</h2>)
               :
               <div style={{ opacity: isTaskListFetching ? 0.5 : 1 }}>
-                <ul>
-                  {taskListItems.map((task, i) =>
-                    <li key={task._id + i}>
-                      <h3>{task.name}</h3>
-                      <p>{task.description}</p>
+                <ul className='task-list'>
+                  {taskListItems.map(({_id, name, description}, i) =>
+                    <li key={_id + i} className='task-list-item'>
+                      <input type="checkbox" id={_id}/>
+                      <label htmlFor={_id}>
+                        <h3>{name}</h3>
+                      </label>
+                      <p>{description}</p>
+                      <Link to={`/flows/${flowId}/tasks/${_id}/messages`} className='border-btn'>Comment</Link>
                     </li>
                   )}
                 </ul>
@@ -174,7 +178,7 @@ class SingleFlow extends Binder {
                 />
               </div>
               : 
-              <button className="yt-btn" onClick={() => this.setState({showTaskForm: true})}>Add new task</button>
+              <button className="yt-btn big-btn" onClick={() => this.setState({showTaskForm: true})}>Add new task</button>
             }
           </div>
         }
