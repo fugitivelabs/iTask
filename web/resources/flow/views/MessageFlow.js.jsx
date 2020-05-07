@@ -94,7 +94,7 @@ class MessageFlow extends Binder {
           '...Loading'
           :
           <div style={{ opacity: isFlowFetching ? 0.5 : 1 }}>
-            <Link to={`/flows/${match.params.flowId}`}>Return to {selectedFlow.name} </Link>
+            <Link to={`/flows/${flowId}`}>Return to {selectedFlow.name} </Link>
             {isTaskFetching ? 
               '...Loading'
               :

@@ -15,6 +15,7 @@ import { Link, withRouter } from 'react-router-dom';
 
 // import actions
 import * as flowActions from '../flowActions';
+import * as taskActions from '../../task/taskActions';
 
 // import global components
 import Binder from '../../../global/components/Binder.js.jsx';
@@ -45,7 +46,7 @@ class FlowList extends Binder {
   }
 
   render() {
-    const { flowStore } = this.props;
+    const { flowStore, taskStore } = this.props;
 
     /**
      * Retrieve the list information and the list items for the component here.
@@ -106,13 +107,14 @@ FlowList.propTypes = {
   dispatch: PropTypes.func.isRequired
 }
 
-const mapStoreToProps = ({flow}) => {
+const mapStoreToProps = ({flow, task}) => {
   /**
   * NOTE: Yote refer's to the global Redux 'state' as 'store' to keep it mentally
   * differentiated from the React component's internal state
   */
   return {
-    flowStore: flow
+    flowStore: flow,
+    taskStore: task
   }
 }
 
