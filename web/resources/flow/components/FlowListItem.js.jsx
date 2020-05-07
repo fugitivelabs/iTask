@@ -4,12 +4,30 @@ import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
 
 const FlowListItem = ({
-  flow
+  flow: {name, _id},
+  taskListItems
 }) => {
   return (
-    <li>
-      <Link to={`/flows/${flow._id}`}> {flow.name}</Link>
-    </li>
+    <div className="flow-item">
+      <h4>
+        <Link to={`/flows/${_id}`}> {name}</Link>
+      </h4>
+      <hr/>
+      <ul className='task-list'>
+        {(taskListItems && taskListItems.length > 0) ?
+          taskListItems.map( ({_id, name, complete}) => (
+            <li className='task-list-item' key={_id}>
+              <input type="checkbox" defaultChecked={!!complete? true: false} disabled id={_id}/>
+              <label htmlFor={_id} >
+                <span>{name}</span>
+              </label>
+            </li>
+          ))
+          : 
+          'No Task Yet!'
+        }
+      </ul>
+    </div>
   )
 }
 

@@ -30,7 +30,18 @@ class FlowList extends Binder {
 
   componentDidMount() {
     // fetch a list of your choice
-    this.props.dispatch(flowActions.fetchListIfNeeded('all')); // defaults to 'all'
+    const {dispatch} = this.props
+    dispatch(flowActions.fetchListIfNeeded('all')); // defaults to 'all'
+    dispatch(taskActions.fetchListIfNeeded());
+  }
+
+  componentWillReceiveProps(){
+    const {flowStore, dispatch} = this.props
+    const flowListItems = flowStore.util.getList("all");
+    flowListItems.map( ({_id}) => {
+      dispatch(taskActions.fetchListIfNeeded('_flow', _id));
+      return true
+    })
   }
 
   render() {
@@ -71,19 +82,19 @@ class FlowList extends Binder {
 
     return (
       <FlowLayout>
-        <h1> Flow List </h1>
+        <div className="title">
+          <h1> Flow List </h1>
+          <Link to={'/flows/new'} className='title-btn'> New Flow </Link>
+        </div>
         <hr/>
-        <Link to={'/flows/new'}> New Flow </Link>
-        <br/>
         { isEmpty ?
           (isFetching ? <h2>Loading...</h2> : <h2>Empty.</h2>)
           :
-          <div style={{ opacity: isFetching ? 0.5 : 1 }}>
-            <ul>
-              {flowListItems.map((flow, i) =>
-                <FlowListItem key={flow._id + i} flow={flow} />
-              )}
-            </ul>
+          <div style={{ opacity: isFetching ? 0.5 : 1 }} className='flow-item-container'>
+            {flowListItems.map((flow, i) =>{
+              const taskListItems = taskStore.util.getList("_flow", flow._id);
+              return <FlowListItem key={flow._id + i} flow={flow} taskListItems={taskListItems}/>
+            })}
           </div>
         }
       </FlowLayout>
@@ -95,13 +106,13 @@ FlowList.propTypes = {
   dispatch: PropTypes.func.isRequired
 }
 
-const mapStoreToProps = (store) => {
+const mapStoreToProps = ({flow}) => {
   /**
   * NOTE: Yote refer's to the global Redux 'state' as 'store' to keep it mentally
   * differentiated from the React component's internal state
   */
   return {
-    flowStore: store.flow
+    flowStore: flow
   }
 }
 
