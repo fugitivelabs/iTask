@@ -8,20 +8,20 @@
  */
 
 // import primary libraries
-import React from 'react';
-import PropTypes from 'prop-types';
-import { connect } from 'react-redux';
-import { Link, withRouter } from 'react-router-dom';
+import React from "react";
+import PropTypes from "prop-types";
+import { connect } from "react-redux";
+import { Link, withRouter } from "react-router-dom";
 
 // import actions
-import * as taskActions from '../taskActions';
+import * as taskActions from "../taskActions";
 
 // import global components
-import Binder from '../../../global/components/Binder.js.jsx';
+import Binder from "../../../global/components/Binder.js.jsx";
 
 // import resource components
-import TaskLayout from '../components/TaskLayout.js.jsx';
-import TaskListItem from '../components/TaskListItem.js.jsx';
+import TaskLayout from "../components/TaskLayout.js.jsx";
+import TaskListItem from "../components/TaskListItem.js.jsx";
 
 class TaskList extends Binder {
   constructor(props) {
@@ -30,7 +30,7 @@ class TaskList extends Binder {
 
   componentDidMount() {
     // fetch a list of your choice
-    this.props.dispatch(taskActions.fetchListIfNeeded('all')); // defaults to 'all'
+    this.props.dispatch(taskActions.fetchListIfNeeded("all")); // defaults to 'all'
   }
 
   render() {
@@ -58,55 +58,50 @@ class TaskList extends Binder {
      * NOTE: isEmpty is is usefull when the component references more than one
      * resource list.
      */
-    const isEmpty = (
-      !taskListItems
-      || !taskList
-    );
+    const isEmpty = !taskListItems || !taskList;
 
-    const isFetching = (
-      !taskListItems
-      || !taskList
-      || taskList.isFetching
-    )
+    const isFetching = !taskListItems || !taskList || taskList.isFetching;
 
     return (
       <TaskLayout>
         <h1> Task List </h1>
-        <hr/>
-        <Link to={'/tasks/new'}> New Task </Link>
-        <br/>
-        { isEmpty ?
-          (isFetching ? <h2>Loading...</h2> : <h2>Empty.</h2>)
-          :
+        <hr />
+        <Link to={"/tasks/new"}> New Task </Link>
+        <br />
+        {isEmpty ? (
+          isFetching ? (
+            <h2>Loading...</h2>
+          ) : (
+            <h2>Empty.</h2>
+          )
+        ) : (
           <div style={{ opacity: isFetching ? 0.5 : 1 }}>
             <ul>
-              {taskListItems.map((task, i) =>
-                <TaskListItem key={task._id + i} task={task} />
-              )}
+              {taskListItems && taskListItems.length > 0
+                ? taskListItems.map((task, i) => (
+                    <TaskListItem key={task._id + i} task={task} />
+                  ))
+                : null}
             </ul>
           </div>
-        }
+        )}
       </TaskLayout>
-    )
+    );
   }
 }
 
 TaskList.propTypes = {
-  dispatch: PropTypes.func.isRequired
-}
+  dispatch: PropTypes.func.isRequired,
+};
 
 const mapStoreToProps = (store) => {
   /**
-  * NOTE: Yote refer's to the global Redux 'state' as 'store' to keep it mentally
-  * differentiated from the React component's internal state
-  */
+   * NOTE: Yote refer's to the global Redux 'state' as 'store' to keep it mentally
+   * differentiated from the React component's internal state
+   */
   return {
-    taskStore: store.task
-  }
-}
+    taskStore: store.task,
+  };
+};
 
-export default withRouter(
-  connect(
-    mapStoreToProps
-  )(TaskList)
-);
+export default withRouter(connect(mapStoreToProps)(TaskList));
