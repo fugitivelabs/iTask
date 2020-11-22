@@ -96,11 +96,18 @@ class FlowList extends Binder {
           (isFetching ? <h2>Loading...</h2> : <h2>Empty.</h2>)
           :
           <div style={{ opacity: isFetching ? 0.5 : 1 }}>
-            <ul id="flow-list">
+            <ul className="flow-list">
               {flowListItems.map((flow, i) => {
                 const { _id } = flow;
 
-                return taskList._flow && taskList._flow[_id] && !taskList._flow[_id].isFetching ? <FlowListItem key={flow._id + i} flow={flow} taskIds={taskList._flow[_id] ? taskList._flow[_id].items : []} tasks={byId} onChange={this.completeTask} /> : <div>loading</div>
+                return taskList._flow && taskList._flow[_id] && !taskList._flow[_id].isFetching ?
+                  <FlowListItem
+                    key={flow._id + i}
+                    flow={flow}
+                    taskIds={taskList._flow[_id] ? taskList._flow[_id].items : []}
+                    tasks={byId}
+                    onChange={this.completeTask}
+                  /> : <div>loading</div>
               })}
             </ul>
           </div>
