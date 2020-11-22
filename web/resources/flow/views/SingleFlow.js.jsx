@@ -137,15 +137,17 @@ class SingleFlow extends Binder {
 
     return (
       <FlowLayout>
-        <h3> Single Flow </h3>
         { isFlowEmpty ?
           (isFlowFetching ? <h2>Loading...</h2> : <h2>Empty.</h2>)
           :
           <div style={{ opacity: isFlowFetching ? 0.5 : 1 }}>
-            <h1> { selectedFlow.name }
-            </h1>
-            <p> { selectedFlow.description }</p>
-            <Link className="yt-btn x-small bordered" to={`${this.props.match.url}/update`}> Edit </Link>
+            <div className="flow-item-header">
+              <span>
+                <h1> { selectedFlow.name } </h1>
+                <p> { selectedFlow.description }</p>
+              </span>
+              <Link className="yt-btn x-small" to={`${this.props.match.url}/update`}> Edit </Link>
+            </div>
             <hr/>
             { isTaskListEmpty ?
               (isTaskListFetching ? <h2>Loading...</h2> : <h2>Empty.</h2>)

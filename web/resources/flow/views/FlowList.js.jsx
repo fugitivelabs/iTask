@@ -79,8 +79,10 @@ class FlowList extends Binder {
 
     return (
       <FlowLayout>
-        <h1> Flows </h1>
-        <Link className="yt-btn x-small" to={'/flows/new'}> New Flow </Link>
+        <div className="flow-item-header">
+          <h1> Flows </h1>
+          <Link className="yt-btn x-small" to={'/flows/new'}> New Flow </Link>
+        </div>
         <hr/>
         <br/>
         { isEmpty ?
