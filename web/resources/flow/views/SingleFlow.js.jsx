@@ -117,7 +117,18 @@ class SingleFlow extends Binder {
      * use the reducer getList utility to convert the all.items array of ids
      * to the actual task objetcs
      */
-    const taskListItems = taskStore.util.getList("_flow", match.params.flowId);
+    const taskListItems = taskStore.util.getList("_flow", match.params.flowId) || [];
+    const completedTasks = [];
+    const todoTasks = [];
+
+    taskListItems.forEach((task) => {
+      if (task.status === 'approved') {
+        completedTasks.push(task);
+      }
+      else {
+        todoTasks.push(task);
+      }
+    });
     
     const isFlowEmpty = (
       !selectedFlow
@@ -138,8 +149,7 @@ class SingleFlow extends Binder {
       !taskListItems
       || !taskList
       || taskList.isFetching
-    )
-
+    );
 
     const isNewTaskEmpty = !task;
 
@@ -161,8 +171,8 @@ class SingleFlow extends Binder {
               (isTaskListFetching ? <h2>Loading...</h2> : <h2>Empty.</h2>)
               :
               <div style={{ opacity: isTaskListFetching ? 0.5 : 1 }}>
-                <ul id="task-list">
-                  {taskListItems.map((task, i) => {
+                <ul className="task-list">
+                  {todoTasks.map((task, i) => {
                     const { complete, status, name, _id } = task;
 
                     return (
@@ -180,7 +190,6 @@ class SingleFlow extends Binder {
                     );
                   })}
                 </ul>
-                <hr />
               </div>
             }
             { !isNewTaskEmpty && showTaskForm ?
@@ -196,8 +205,31 @@ class SingleFlow extends Binder {
                 />
               </div>
               : 
-              <button className="yt-btn" onClick={() => this.setState({showTaskForm: true})}>Add new task</button>
+              <button className="yt-btn" onClick={() => this.setState({showTaskForm: true})}>Add task</button>
             }
+
+            <hr />
+
+            { !!completedTasks.length && (
+              <ul className="task-list">
+                <p><i>Completed tasks</i></p>
+                {completedTasks.map((task, i) => {
+                  const { complete, status, name, _id } = task;
+
+                  return (
+                    <li key={task._id + i} className="flow-item-tasks completed">
+                      <CheckboxInput
+                        key={`task-${_id}`}
+                        change={this.completeTask}
+                        label={name}
+                        name={_id}
+                        value={status === 'approved'}
+                      />
+                    </li>
+                  );
+                })}
+              </ul>
+            )}
           </div>
         }
       </FlowLayout>

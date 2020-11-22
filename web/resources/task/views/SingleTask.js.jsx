@@ -51,17 +51,21 @@ class SingleTask extends Binder {
 
     return (
       <TaskLayout>
-        <h3> Single Task </h3>
+        <Link to="/flows">{`<- Back to INSERT FLOW heRE`}</Link>
         { isEmpty ?
           (isFetching ? <h2>Loading...</h2> : <h2>Empty.</h2>)
           :
           <div style={{ opacity: isFetching ? 0.5 : 1 }}>
-            <h1> { selectedTask.name }
-            </h1>
+            <div className="flow-item-header">
+              <span>
+                <h1> { selectedTask.name } </h1>
+                <p>{ selectedTask.description } </p>
+              </span>
+              <Link className="yt-btn x-small" to={`${this.props.match.url}/update`}> Update Task </Link>
+            </div>
             <hr/>
-            <p> <em>Other characteristics about the Task would go here.</em></p>
+            
             <br/>
-            <Link to={`${this.props.match.url}/update`}> Update Task </Link>
           </div>
         }
       </TaskLayout>
