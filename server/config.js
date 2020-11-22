@@ -7,7 +7,7 @@
 const path = require('path');
 const rootPath = path.normalize(__dirname + '/../../');
 
-const secrets = require('./secrets.js');
+const secrets = require('./secrets-sample.js');
 
 /**
  * NOTE: urls should omit http(s)://
