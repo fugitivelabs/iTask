@@ -15,7 +15,7 @@ import { Link, withRouter } from 'react-router-dom';
 
 // import actions
 import * as flowActions from '../flowActions';
-import { fetchListIfNeeded as fetchTaskList } from '../../task/taskActions';
+import { fetchListIfNeeded as fetchTaskList, sendUpdateTask } from '../../task/taskActions';
 
 // import global components
 import Binder from '../../../global/components/Binder.js.jsx';
@@ -37,6 +37,13 @@ class FlowList extends Binder {
       .then(({ list }) => {
         list.forEach(({ _id }) => dispatch(fetchTaskList('_flow', _id)));
       }); // defaults to 'all'
+  }
+
+  completeTask = (e) => {
+    const { dispatch } = this.props;
+    const { name, checked } = e.target;
+
+    dispatch(sendUpdateTask({ _id: name, complete: checked, status: checked ? 'approved' : 'open' }));
   }
 
   render() {
@@ -93,7 +100,7 @@ class FlowList extends Binder {
               {flowListItems.map((flow, i) => {
                 const { _id } = flow;
 
-                return taskList._flow && taskList._flow[_id] && !taskList._flow[_id].isFetching ? <FlowListItem key={flow._id + i} flow={flow} taskIds={taskList._flow[_id] ? taskList._flow[_id].items : []} tasks={byId} /> : <div>loading</div>
+                return taskList._flow && taskList._flow[_id] && !taskList._flow[_id].isFetching ? <FlowListItem key={flow._id + i} flow={flow} taskIds={taskList._flow[_id] ? taskList._flow[_id].items : []} tasks={byId} onChange={this.completeTask} /> : <div>loading</div>
               })}
             </ul>
           </div>

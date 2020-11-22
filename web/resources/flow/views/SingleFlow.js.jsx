@@ -88,6 +88,13 @@ class SingleFlow extends Binder {
     });
   }
 
+  completeTask = (e) => {
+    const { dispatch } = this.props;
+    const { name, checked } = e.target;
+
+    dispatch(taskActions.sendUpdateTask({ _id: name, complete: checked, status: checked ? 'approved' : 'open' }));
+  }
+
   render() {
     const { showTaskForm, task, formHelpers } = this.state;
     const { 
@@ -162,9 +169,9 @@ class SingleFlow extends Binder {
                       <li key={task._id + i} className="flow-item-tasks">
                         <CheckboxInput
                           key={`task-${_id}`}
-                          change={() => {}}
+                          change={this.completeTask}
                           label={name}
-                          name={name}
+                          name={_id}
                           value={status === 'approved'}
                         />
                         <p>{task.description}</p>
