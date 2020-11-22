@@ -13,7 +13,7 @@ import { Link, withRouter } from 'react-router-dom';
 
 // import actions
 import * as taskActions from '../taskActions';
-import { fetchListIfNeeded as fetchTaskNotes, fetchDefaultNote, sendCreateNote } from '../../note/noteActions';
+import { fetchListIfNeeded as fetchTaskNotes, fetchDefaultNote, sendCreateNote, invalidateList } from '../../note/noteActions';
 
 // import global components
 import Binder from '../../../global/components/Binder.js.jsx';
@@ -40,6 +40,12 @@ class SingleTask extends Binder {
     dispatch(fetchTaskNotes('_task', match.params.taskId));
   }
 
+  componentWillReceiveProps() {
+    const { dispatch, match } = this.props;
+
+    dispatch(fetchTaskNotes('_task', match.params.taskId));
+  }
+
   handleChange = (e) => {
     const { name, value } = e.target;
 
@@ -47,7 +53,7 @@ class SingleTask extends Binder {
   }
 
   handleAddComment = () => {
-    const { dispatch, taskStore, userStore } = this.props;
+    const { dispatch, taskStore, userStore, match } = this.props;
     const { id: _task } = taskStore.selected;
     const { _flow } = taskStore.byId[_task];
     const { _id: _user } = userStore.loggedIn.user;
@@ -57,7 +63,19 @@ class SingleTask extends Binder {
       _task: _task,
       _user,
       content: this.state.comment,
-    }));
+    })).then(
+      noteRes => {
+        console.log(noteRes);
+        if(noteRes.success) {
+          dispatch(invalidateList('_task', match.params.taskId));
+        this.setState({
+            comment: '',
+          });
+        } else {
+          alert("ERROR - Check logs");
+        }
+      }
+    );
   }
 
   render() {
@@ -82,7 +100,7 @@ class SingleTask extends Binder {
       taskStore.selected.isFetching
       || !noteList
       || noteList.isFetching
-    )
+    );
 
     return (
       <TaskLayout>
@@ -100,15 +118,17 @@ class SingleTask extends Binder {
             </div>
             <hr/>
 
-            {noteListItems.map(({ content, updated, _user }) => {
+            {noteListItems.length ? noteListItems.map(({ content, updated, _user }) => {
               return (
-                <div key={_user + updated}>
-                  <p>{_user}</p>
-                  <p>{updated}</p>
-                  <p>{content}</p>
+                <div key={_user + updated} className="task-comments">
+                  <p className="user">{_user}</p>
+                  <p className="date">{updated}</p>
+                  <p className="comment">{content}</p>
                 </div>
               );
-            })}
+            }) : (
+              <div>Please add some comments...</div>
+            )}
 
             <hr/>
             <TextAreaInput

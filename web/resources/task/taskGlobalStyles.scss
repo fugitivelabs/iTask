@@ -5,3 +5,15 @@
  */
 
 @import "./admin/taskAdminStyles";
+
+.task-comments {
+    margin-bottom: 12px;
+
+    .user {
+        font-weight: 700;
+    }
+
+    .date {
+        font-size: 0.75rem;
+    }
+}
