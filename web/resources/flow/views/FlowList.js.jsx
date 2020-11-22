@@ -15,6 +15,7 @@ import { Link, withRouter } from 'react-router-dom';
 
 // import actions
 import * as flowActions from '../flowActions';
+import { fetchListIfNeeded as fetchTaskList } from '../../task/taskActions';
 
 // import global components
 import Binder from '../../../global/components/Binder.js.jsx';
@@ -29,12 +30,19 @@ class FlowList extends Binder {
   }
 
   componentDidMount() {
+    const { dispatch } = this.props;
+
     // fetch a list of your choice
-    this.props.dispatch(flowActions.fetchListIfNeeded('all')); // defaults to 'all'
+    dispatch(flowActions.fetchListIfNeeded('all'))
+      .then(({ list }) => {
+        list.forEach(({ _id }) => dispatch(fetchTaskList('_flow', _id)));
+      }); // defaults to 'all'
   }
 
   render() {
-    const { flowStore } = this.props;
+    const { flowStore, taskStore } = this.props;
+
+    const { byId, lists: taskList } = taskStore;
 
     /**
      * Retrieve the list information and the list items for the component here.
@@ -67,22 +75,24 @@ class FlowList extends Binder {
       !flowListItems
       || !flowList
       || flowList.isFetching
-    )
+    );
 
     return (
       <FlowLayout>
-        <h1> Flow List </h1>
+        <h1> Flows </h1>
+        <Link className="yt-btn x-small" to={'/flows/new'}> New Flow </Link>
         <hr/>
-        <Link to={'/flows/new'}> New Flow </Link>
         <br/>
         { isEmpty ?
           (isFetching ? <h2>Loading...</h2> : <h2>Empty.</h2>)
           :
           <div style={{ opacity: isFetching ? 0.5 : 1 }}>
-            <ul>
-              {flowListItems.map((flow, i) =>
-                <FlowListItem key={flow._id + i} flow={flow} />
-              )}
+            <ul id="flow-list">
+              {flowListItems.map((flow, i) => {
+                const { _id } = flow;
+
+                return taskList._flow && taskList._flow[_id] && !taskList._flow[_id].isFetching ? <FlowListItem key={flow._id + i} flow={flow} taskIds={taskList._flow[_id] ? taskList._flow[_id].items : []} tasks={byId} /> : <div>loading</div>
+              })}
             </ul>
           </div>
         }
@@ -101,7 +111,8 @@ const mapStoreToProps = (store) => {
   * differentiated from the React component's internal state
   */
   return {
-    flowStore: store.flow
+    flowStore: store.flow,
+    taskStore: store.task,
   }
 }
 
