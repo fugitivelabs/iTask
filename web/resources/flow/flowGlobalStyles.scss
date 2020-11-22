@@ -20,7 +20,7 @@
   }
 }
 
-#flow-list {
+.flow-list, .task-list {
   list-style: none;
   display: flex;
   margin: 0;
@@ -28,9 +28,15 @@
 
   .flow-item {
     border: 2px solid #CCC;
+    min-width: 200px;
+    max-width: 200px;
     padding: 8px;
 
     color: #000;
+
+    .flow-item-tasks {
+      border-top: 2px solid #CCC;
+    }
 
     a {
       color: black;
@@ -38,21 +44,42 @@
       padding-bottom: 8px;
     }
 
-    .flow-item-tasks {
-      border-top: 2px solid #CCC;
-      padding-top: 8px;
-
-      .input-group {
-        margin-bottom: 8px;
-
-        label {
-          font-weight: 400;
-        }
-      }
-    }
-
     &:not(:last-of-type) {
       margin-right: 16px;
     }
   }
+
+  .flow-item-tasks {
+    padding-top: 8px;
+
+    .input-group {
+      margin-bottom: 8px;
+
+      label {
+        font-weight: 400;
+        word-break: break-all;
+      }
+    }
+
+    p, a {
+      margin-left: 22px;
+    }
+
+    p {
+      font-size: 0.75rem;
+    }
+  }
+
+  .flow-item-tasks.completed {
+    label {
+      text-decoration: line-through;
+      text-decoration-color: red;
+    }
+  }
+}
+
+.task-list {
+  flex-direction: column;
+
+  margin-bottom: 32px;
 }
