@@ -5,3 +5,40 @@
  */
 
 @import "./admin/flowAdminStyles";
+
+#flow-list {
+  list-style: none;
+  display: flex;
+  margin: 0;
+  padding: 0;
+
+  .flow-item {
+    border: 2px solid #CCC;
+    padding: 8px;
+
+    color: #000;
+
+    a {
+      color: black;
+      font-weight: 800;
+      padding-bottom: 8px;
+    }
+
+    .flow-item-tasks {
+      border-top: 2px solid #CCC;
+      padding-top: 8px;
+
+      .input-group {
+        margin-bottom: 8px;
+
+        label {
+          font-weight: 400;
+        }
+      }
+    }
+
+    &:not(:last-of-type) {
+      margin-right: 16px;
+    }
+  }
+}
