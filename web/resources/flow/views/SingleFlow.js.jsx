@@ -17,6 +17,7 @@ import * as taskActions from '../../task/taskActions';
 
 // import global components
 import Binder from '../../../global/components/Binder.js.jsx';
+import { CheckboxInput } from '../../../global/components/forms';
 
 // import resource components
 import FlowLayout from '../components/FlowLayout.js.jsx';
@@ -153,14 +154,26 @@ class SingleFlow extends Binder {
               (isTaskListFetching ? <h2>Loading...</h2> : <h2>Empty.</h2>)
               :
               <div style={{ opacity: isTaskListFetching ? 0.5 : 1 }}>
-                <ul>
-                  {taskListItems.map((task, i) =>
-                    <li key={task._id + i}>
-                      <h3>{task.name}</h3>
-                      <p>{task.description}</p>
-                    </li>
-                  )}
+                <ul id="task-list">
+                  {taskListItems.map((task, i) => {
+                    const { complete, status, name, _id } = task;
+
+                    return (
+                      <li key={task._id + i} className="flow-item-tasks">
+                        <CheckboxInput
+                          key={`task-${_id}`}
+                          change={() => {}}
+                          label={name}
+                          name={name}
+                          value={status === 'approved'}
+                        />
+                        <p>{task.description}</p>
+                        <Link className="yt-btn x-small bordered" to={`/tasks/${_id}`}> Comment </Link>
+                      </li>
+                    );
+                  })}
                 </ul>
+                <hr />
               </div>
             }
             { !isNewTaskEmpty && showTaskForm ?
